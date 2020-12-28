@@ -17,10 +17,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		
 		http.authorizeRequests()
+			// acessos públicos liberados
 			.antMatchers("/webjars/**", "/css/**", "/image/**", "/js/**").permitAll()
 			.antMatchers("/", "/home").permitAll()
 			
+			// acessos privados admin
+			.antMatchers("/u/**").hasAuthority("ADMIN")
+			
+			// acessos privados medicos
+			.antMatchers("/medicos/**").hasAuthority("MEDICO")
+
 			.anyRequest().authenticated()
 			.and()
 				.formLogin()
@@ -30,7 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 			.and()
 				.logout()
-				.logoutSuccessUrl("/");
+				.logoutSuccessUrl("/")
+			.and()
+				.exceptionHandling()
+				.accessDeniedPage("/acesso-negado");
 	}
 
 	@Override
